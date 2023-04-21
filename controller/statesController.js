@@ -3,7 +3,7 @@ const State = require('../model/States');
 const fs = require('fs');
 const path = require('path');
 const statesData = require('../model/statesData.json');
-const verifyStateCodeMiddleware = require('../middleware/verifyStateCode');
+const verifyStateCode = require('../middleware/verifyStateCode');
 
 const getAllStates = async (req, res) => {
   try {
@@ -38,10 +38,8 @@ const getAllStates = async (req, res) => {
 
 const getStateData = async (req, res) => {
   try {
-    const stateCode = req.params.state;
-
-    // Attach state code to request object
-    req.stateCode = stateCode;
+    // Attach state code to request object using the middleware function
+    const stateCode = req.stateCode;
 
     // Find the state with the given code in MongoDB
     const state = await State.findOne({ code: stateCode });
@@ -67,6 +65,7 @@ const getStateData = async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
 
 
 

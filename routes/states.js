@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const stateController = require('../controller/statesController');
+const verifyStateCode = require('../middleware/verifyStateCode');
 
 router.use((req, res, next) => {
   console.log(`Incoming ${req.method} request to ${req.originalUrl}`);
