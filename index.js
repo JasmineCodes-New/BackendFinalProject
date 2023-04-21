@@ -9,6 +9,8 @@ const path = require('path');
 const connectDB = require('./config/dbConnect');
 const routes = require('./routes/states');
 const verifyStateCode = require('./middleware/verifyStateCode');
+const sendHTML = require('./middleware/sendHTML');
+const handle404 = require('./middleware/handle404');
 
 connectDB();
 
@@ -21,6 +23,12 @@ app.use('/', routes);
 app.use(verifyStateCode);
 
 app.use(express.static('public'));
+
+// Root endpoint middleware
+app.use(sendHTML);
+
+// 404 middleware
+app.use(handle404);
 
 app.all('*', (req, res) => {
     res.status(404);

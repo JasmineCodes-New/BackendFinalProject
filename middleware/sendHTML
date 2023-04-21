@@ -1,0 +1,7 @@
+const sendHTML = (req, res, next) => {
+  if (req.url === '/') {
+    res.set('Content-Type', 'text/html');
+    return res.send('<h1>Welcome to my API</h1>');
+  }
+  next();
+};
