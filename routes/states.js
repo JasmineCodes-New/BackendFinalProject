@@ -11,7 +11,7 @@ router.get('/', stateController.getAllStates);
 
 router.get('/states/', stateController.getAllStates);
 
-router.get('/states/:state', stateController.getStateData);
+router.get('/states/:state', verifyStateCode, stateController.getStateData);
 
 router.get('/states/:state/funfact', stateController.getFunFact);
 
