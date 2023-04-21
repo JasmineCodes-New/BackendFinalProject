@@ -8,6 +8,7 @@ const cors = require('cors');
 const path = require('path');
 const connectDB = require('./config/dbConnect');
 const routes = require('./routes/states');
+const verifyStateCode = require('./middleware/verifyStateCode');
 
 connectDB();
 
@@ -16,6 +17,8 @@ app.use(cors());
 
 app.use('/', require('./routes/root'));
 app.use('/', routes);
+
+app.use(verifyStateCode);
 
 app.use(express.static('public'));
 
