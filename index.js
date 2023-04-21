@@ -17,6 +17,8 @@ app.use(cors());
 app.use('/', require('./routes/root'));
 app.use('/', routes);
 
+app.use(express.static('public'));
+
 app.all('*', (req, res) => {
     res.status(404);
     if (req.accepts('html')) {
