@@ -4,31 +4,17 @@ const mongoose = require('mongoose');
 const express = require('express');
 const app = express();
 const port = 3000;
-const cors = require('cors');
 const path = require('path');
 const connectDB = require('./config/dbConnect');
 const routes = require('./routes/states');
-const verifyStateCode = require('./middleware/verifyStateCode');
-const sendHTML = require('./middleware/sendHTML');
-const handle404 = require('./middleware/handle404');
+const middlewares = require('./middleware');
 
 connectDB();
-
-app.use(express.json());
-app.use(cors());
 
 app.use('/', require('./routes/root'));
 app.use('/', routes);
 
-app.use(verifyStateCode);
-
-app.use(express.static('public'));
-
-// Root endpoint middleware
-app.use(sendHTML);
-
-// 404 middleware
-app.use(handle404);
+app.use(middlewares);
 
 app.all('*', (req, res) => {
     res.status(404);
@@ -44,6 +30,7 @@ app.all('*', (req, res) => {
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
+
 
 
 

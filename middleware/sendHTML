@@ -5,3 +5,5 @@ const sendHTML = (req, res, next) => {
   }
   next();
 };
+
+module.exports = sendHTML;
