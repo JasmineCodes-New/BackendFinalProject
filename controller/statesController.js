@@ -97,7 +97,7 @@ const getCapital = (req, res) => {
   const state = statesData.find(s => s.code === stateCode);
 
   if (!state) {
-    return res.status(404).json({ message: 'State not found' });
+    return res.status(404).json({ message: "Invalid state abbreviation parameter" });
   }
 
   const capital = state.capital_city;
@@ -113,7 +113,7 @@ const getNickname = async (req, res) => {
     const state = statesData.find((state) => state.code === stateCode);
 
     if (!state) {
-      return res.status(404).json({ message: "'Invalid state abbreviation parameter" });
+      return res.status(404).json({ message: "Invalid state abbreviation parameter" });
     }
 
     const nickname = state.nickname;
@@ -135,7 +135,7 @@ const getPopulation = (req, res) => {
     const state = statesData.find(s => s.code === stateCode.toUpperCase());
 
     if (!state) {
-      return res.status(404).json({ error: `State with code ${stateCode} not found` });
+      return res.status(404).json({ error: "Invalid state abbreviation parameter" });
     }
 
     const population = state.population;
@@ -154,7 +154,7 @@ const getAdmission = (req, res) => {
     const state = statesData.find(s => s.code === stateCode.toUpperCase());
 
     if (!state) {
-      return res.status(404).json({ error: `State with code ${stateCode} not found` });
+      return res.status(404).json({ error: "Invalid state abbreviation parameter" });
     }
 
     const stateName = state.state;
