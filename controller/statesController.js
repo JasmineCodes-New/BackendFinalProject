@@ -174,17 +174,21 @@ const postFunFact = async (req, res) => {
     const { state } = req.params;
     const { funfacts } = req.body;
 
+    if (!funfacts) {
+      return res.status(400).json({ error: 'State fun facts value required' });
+    }
+
+    if (!Array.isArray(funfacts)) {
+      return res.status(400).json({ error: 'State fun facts value must be an array' });
+    }
+
     const stateData = statesData.find(s => s.code === state.toUpperCase());
 
     if (!stateData) {
       return res.status(404).json({ error: 'State not found' });
     }
 
-    const stateDoc = await State.findOneAndUpdate(
-      { code: stateData.code },
-      { $push: { funfacts: { $each: funfacts } } },
-      { new: true }
-    );
+    let stateDoc = await State.findOne({ code: stateData.code });
 
     if (!stateDoc) {
       const newState = new State({ code: stateData.code, funfacts });
@@ -192,12 +196,22 @@ const postFunFact = async (req, res) => {
       return res.json(newState.funfacts);
     }
 
+    const existingFunfacts = stateDoc.funfacts;
+    const newFunfacts = funfacts.filter(f => !existingFunfacts.includes(f));
+
+    if (newFunfacts.length === 0) {
+      return res.json(stateDoc.funfacts);
+    }
+
+    stateDoc.funfacts.push(...newFunfacts);
+    stateDoc = await stateDoc.save();
     res.json(stateDoc.funfacts);
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ error: 'Server error' });
   }
 };
+
 
 const updateFunFacts = async (req, res) => {
   const stateCode = req.params.state;
