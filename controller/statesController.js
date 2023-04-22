@@ -113,7 +113,7 @@ const getNickname = async (req, res) => {
     const state = statesData.find((state) => state.code === stateCode);
 
     if (!state) {
-      return res.status(404).json({ message: "State not found" });
+      return res.status(404).json({ message: "'Invalid state abbreviation parameter" });
     }
 
     const nickname = state.nickname;
