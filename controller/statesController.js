@@ -19,12 +19,13 @@ const getAllStates = async (req, res) => {
     const dbStates = await State.find({ code: { $in: stateCodes } });
 
     const mergedStates = states.map(state => {
-      const dbState = dbStates.find(s => s.code === state.code);
-      if (dbState) {
-        return { ...state, funfacts: dbState.funfacts };
-      }
-      return state;
-    });
+  const dbState = dbStates.find(s => s.code === state.code);
+  if (dbState) {
+    return { ...state, funfacts: dbState.funfacts };
+  } else {
+    return { ...state, funfacts: [] }; // add an empty array as funfacts for states without it
+  }
+});
 
     return res.json(mergedStates);
   } catch (err) {
@@ -32,6 +33,7 @@ const getAllStates = async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
 
 
 
@@ -185,7 +187,7 @@ const postFunFact = async (req, res) => {
       return res.status(404).json({ message: "Invalid state abbreviation parameter" });
     }
 
-    let stateDoc = await State.findOne({ code: stateData.code });
+    const stateDoc = await State.findOne({ code: stateData.code });
 
     if (!stateDoc) {
       const newState = new State({ code: stateData.code, funfacts });
@@ -193,21 +195,20 @@ const postFunFact = async (req, res) => {
       return res.json(newState.funfacts);
     }
 
-    const existingFunfacts = stateDoc.funfacts;
-    const newFunfacts = funfacts.filter(f => !existingFunfacts.includes(f));
-
-    if (newFunfacts.length === 0) {
-      return res.json(stateDoc.funfacts);
+    if (stateDoc.funfacts.length > 0) {
+      return res.status(400).json({ error: 'State fun facts already exist' });
     }
 
-    stateDoc.funfacts.push(...newFunfacts);
-    stateDoc = await stateDoc.save();
+    stateDoc.funfacts = funfacts;
+    await stateDoc.save();
     res.json(stateDoc.funfacts);
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ error: 'Server error' });
   }
 };
+
+
 
 
 const updateFunFacts = async (req, res) => {
@@ -243,13 +244,18 @@ const updateFunFacts = async (req, res) => {
 
     // Check if index is sent and adjust for zero-based indexing
     if (!index) {
-      return res.status(400).json({ error: 'Index parameter is required' });
+      return res.status(400).json({ error: 'State fun fact index value required' });
     }
     const adjustedIndex = index - 1;
 
     // Check if index is valid
     if (adjustedIndex < 0 || adjustedIndex >= stateInDb.funfacts.length) {
-      return res.status(400).json({ error: 'Invalid index parameter' });
+      return res.status(400).json({ error: 'No Fun Fact found at that index for ' + stateInDb.name });
+    }
+
+    // Check if funfact is sent and is a string value
+    if (!newFunFact || typeof newFunFact !== 'string') {
+      return res.status(400).json({ error: 'State fun fact value required' });
     }
 
     // Update the funfact at the specified index
@@ -310,13 +316,6 @@ const deleteFunFact = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
-
-
-
-
-
-
-
 
 
 module.exports = { getAllStates, getStateData, getFunFact, getCapital, getNickname, getPopulation, getAdmission, 
