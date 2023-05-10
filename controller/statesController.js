@@ -3,7 +3,6 @@ const State = require('../model/States');
 const fs = require('fs');
 const path = require('path');
 const statesData = require('../model/statesData.json');
-const verifyStateCode = require('../middleware/verifyStateCode');
 
 const getAllStates = async (req, res) => {
   try {
@@ -46,7 +45,7 @@ const getStateData = async (req, res) => {
 
     // If state is not found in MongoDB, return a 404 response
     if (!state) {
-      return res.status(404).json({ error: 'State not found' });
+      return res.status(404).json({ message: "Invalid state abbreviation parameter" });
     }
 
     // Find the state with the given code in statesData.json
@@ -78,7 +77,7 @@ const getFunFact = async (req, res) => {
     const state = await State.findOne({ code: stateCode });
 
     if (!state) {
-      return res.status(404).json({ error: 'State not found' });
+      return res.status(404).json({ message: "Invalid state abbreviation parameter" });
     }
 
     return res.json({ funfacts: state.funfacts });
@@ -87,8 +86,6 @@ const getFunFact = async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-
 
 
 
@@ -135,7 +132,7 @@ const getPopulation = (req, res) => {
     const state = statesData.find(s => s.code === stateCode.toUpperCase());
 
     if (!state) {
-      return res.status(404).json({ error: "Invalid state abbreviation parameter" });
+      return res.status(404).json({ message: "Invalid state abbreviation parameter" });
     }
 
     const population = state.population;
@@ -154,7 +151,7 @@ const getAdmission = (req, res) => {
     const state = statesData.find(s => s.code === stateCode.toUpperCase());
 
     if (!state) {
-      return res.status(404).json({ error: "Invalid state abbreviation parameter" });
+      return res.status(404).json({ message: "Invalid state abbreviation parameter" });
     }
 
     const stateName = state.state;
@@ -185,7 +182,7 @@ const postFunFact = async (req, res) => {
     const stateData = statesData.find(s => s.code === state.toUpperCase());
 
     if (!stateData) {
-      return res.status(404).json({ error: 'State not found' });
+      return res.status(404).json({ message: "Invalid state abbreviation parameter" });
     }
 
     let stateDoc = await State.findOne({ code: stateData.code });
